@@ -1,0 +1,170 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Operaciones - Dependiente</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/dependiente/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/dependiente/operaciones.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="credit-card" class="sidebar-icon"></i></span> Operaciones (Comercio)
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Operaciones de Dependiente</h2>
+        
+        <div class="card" style="max-width: 600px;">
+            <div class="card-title">1. Buscar Cliente</div>
+            <div id="buscarClienteForm">
+                <div class="flex gap-2">
+                    <input type="text" id="buscarDui" placeholder="Ej: 12345678-9" class="form-control mascara-dui" />
+                    <button type="button" id="btnBuscar" class="btn btn-secondary">Buscar por DUI</button>
+                </div>
+                <div id="errorMsgBuscar" style="color: var(--danger); margin-top: 10px; display: none;"></div>
+            </div>
+        </div>
+
+        <div id="panelOperaciones" style="display: none;">
+            <div class="card" style="max-width: 600px;">
+                <div class="card-title">2. Información del Cliente y Cuentas</div>
+                <p><strong>Cliente:</strong> <span id="nombreCliente"></span></p>
+                
+                <hr style="margin: 1rem 0; border: 0; border-top: 1px solid var(--border);" />
+                
+                <div id="operacionForm">
+                    <div class="form-group">
+                        <label class="form-label">Cuenta a Operar</label>
+                        <select id="cuentaSeleccionada" class="form-control">
+                            <option value="">-- Seleccionar Cuenta --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Monto ($)</label>
+                        <input type="text" id="montoOperacion" class="form-control mascara-monto" placeholder="0.00" />
+                    </div>
+                    
+                    <div id="errorMsgOperar" style="color: var(--danger); margin-top: 10px; display: none;"></div>
+                    <div id="successMsgOperar" style="color: var(--success); margin-top: 10px; display: none;"></div>
+
+                    <div class="flex gap-4 mt-4">
+                        <button type="button" id="btnDeposito" class="btn btn-success" style="flex: 1;">Realizar Depósito</button>
+                        <button type="button" id="btnRetiro" class="btn btn-primary" style="flex: 1; background: var(--danger);">Realizar Retiro</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // Lógica REST con JavaScript puro (Avance 2)
+            const contextPath = '#{request.contextPath}';
+            
+            document.getElementById('btnBuscar').addEventListener('click', async () => {
+                const dui = document.getElementById('buscarDui').value;
+                const errDiv = document.getElementById('errorMsgBuscar');
+                const panelOp = document.getElementById('panelOperaciones');
+                const selectCuenta = document.getElementById('cuentaSeleccionada');
+                
+                errDiv.style.display = 'none';
+                panelOp.style.display = 'none';
+                
+                if (!dui) {
+                    errDiv.innerText = 'Por favor ingrese el DUI';
+                    errDiv.style.display = 'block';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(contextPath + '/api/dependiente/buscar-cliente', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ dui: dui })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        errDiv.innerText = data.error || 'Error al buscar cliente';
+                        errDiv.style.display = 'block';
+                        return;
+                    }
+                    
+                    // Cliente encontrado
+                    document.getElementById('nombreCliente').innerText = data.cliente;
+                    
+                    // Llenar combo de cuentas
+                    selectCuenta.innerHTML = '<option value="">-- Seleccionar Cuenta --</option>';
+                    data.cuentas.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.numeroCuenta;
+                        opt.innerText = c.numeroCuenta + ' - Saldo: $' + parseFloat(c.saldo).toFixed(2);
+                        selectCuenta.appendChild(opt);
+                    });
+                    
+                    panelOp.style.display = 'block';
+                    
+                } catch (error) {
+                    errDiv.innerText = 'Error de conexión: ' + error.message;
+                    errDiv.style.display = 'block';
+                }
+            });
+            
+            async function operar(tipo) {
+                const cuenta = document.getElementById('cuentaSeleccionada').value;
+                const monto = document.getElementById('montoOperacion').value;
+                const errDiv = document.getElementById('errorMsgOperar');
+                const succDiv = document.getElementById('successMsgOperar');
+                
+                errDiv.style.display = 'none';
+                succDiv.style.display = 'none';
+                
+                if (!cuenta || !monto) {
+                    errDiv.innerText = 'Seleccione una cuenta e ingrese un monto';
+                    errDiv.style.display = 'block';
+                    return;
+                }
+                
+                const url = contextPath + '/api/dependiente/' + (tipo === 'D' ? 'deposito' : 'retiro');
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ numeroCuenta: cuenta, monto: parseFloat(monto) })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        errDiv.innerText = data.error || 'Error al operar';
+                        errDiv.style.display = 'block';
+                        return;
+                    }
+                    
+                    succDiv.innerText = data.mensaje + ' (Monto: $' + parseFloat(data.monto).toFixed(2) + ')';
+                    succDiv.style.display = 'block';
+                    
+                    // Limpiar formulario y forzar recarga de cuentas
+                    document.getElementById('montoOperacion').value = '';
+                    setTimeout(() => document.getElementById('btnBuscar').click(), 2000);
+                    
+                } catch (error) {
+                    errDiv.innerText = 'Error de conexión: ' + error.message;
+                    errDiv.style.display = 'block';
+                }
+            }
+            
+            document.getElementById('btnDeposito').addEventListener('click', () => operar('D'));
+            document.getElementById('btnRetiro').addEventListener('click', () => operar('R'));
+            
+        </script>
+
+    </ui:define>
+</ui:composition>

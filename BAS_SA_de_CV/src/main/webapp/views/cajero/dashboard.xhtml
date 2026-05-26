@@ -1,0 +1,50 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Dashboard Cajero - BAS</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/cajero/dashboard.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/cajero/registro.xhtml" styleClass="nav-link">
+            <span><i data-lucide="users" class="sidebar-icon"></i></span> Registro Usuarios
+        </h:link>
+        <h:link outcome="/views/cajero/operaciones.xhtml" styleClass="nav-link">
+            <span><i data-lucide="banknote" class="sidebar-icon"></i></span> Operaciones Caja
+        </h:link>
+        <h:link outcome="/views/cajero/prestamos.xhtml" styleClass="nav-link">
+            <span><i data-lucide="file-text" class="sidebar-icon"></i></span> Préstamos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Bienvenido, Caja #{cajeroBean.cajeroActual.nombres}</h2>
+        
+        <div class="flex gap-4">
+            <div class="card text-center" style="flex: 1;">
+                <div style="margin-bottom: 1rem;"><i data-lucide="users" class="sidebar-icon" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+                <h3 style="margin-bottom: 0.5rem;">Registro</h3>
+                <p style="color: var(--secondary); margin-bottom: 1rem;">Registrar clientes y dependientes.</p>
+                <h:link outcome="/views/cajero/registro.xhtml" styleClass="btn btn-primary">Ir a Registro</h:link>
+            </div>
+            
+            <div class="card text-center" style="flex: 1;">
+                <div style="margin-bottom: 1rem;"><i data-lucide="banknote" class="sidebar-icon" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+                <h3 style="margin-bottom: 0.5rem;">Operaciones</h3>
+                <p style="color: var(--secondary); margin-bottom: 1rem;">Depósitos y retiros de clientes.</p>
+                <h:link outcome="/views/cajero/operaciones.xhtml" styleClass="btn btn-primary">Ir a Operaciones</h:link>
+            </div>
+            
+            <div class="card text-center" style="flex: 1;">
+                <div style="margin-bottom: 1rem;"><i data-lucide="file-text" class="sidebar-icon" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+                <h3 style="margin-bottom: 0.5rem;">Préstamos</h3>
+                <p style="color: var(--secondary); margin-bottom: 1rem;">Apertura y cálculo de préstamos.</p>
+                <h:link outcome="/views/cajero/prestamos.xhtml" styleClass="btn btn-primary">Ir a Préstamos</h:link>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

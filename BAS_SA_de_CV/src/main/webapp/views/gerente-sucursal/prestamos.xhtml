@@ -1,0 +1,82 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Aprobar Préstamos - Gerente Sucursal</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/gerente-sucursal/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/gerente-sucursal/empleados.xhtml" styleClass="nav-link">
+            <span><i data-lucide="users" class="sidebar-icon"></i></span> Gestionar Personal
+        </h:link>
+        <h:link outcome="/views/gerente-sucursal/prestamos.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="file-text" class="sidebar-icon"></i></span> Aprobar Préstamos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Préstamos en Espera</h2>
+        
+        <div class="card">
+            <h:form id="prestamosForm">
+                <h:dataTable value="#{gerenteSucursalBean.prestamosEnEspera}" var="prestamo" styleClass="data-table">
+                    <h:column>
+                        <f:facet name="header">ID</f:facet>
+                        #{prestamo.idPrestamo}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Cliente</f:facet>
+                        #{prestamo.cliente.nombres} #{prestamo.cliente.apellidos}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Salario Declarado</f:facet>
+                        <h:outputText value="#{prestamo.cliente.salario}">
+                            <f:convertNumber type="currency" currencySymbol="$" />
+                        </h:outputText>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Monto Solicitado</f:facet>
+                        <span style="font-weight: 600; color: var(--primary);">
+                            <h:outputText value="#{prestamo.montoSolicitado}">
+                                <f:convertNumber type="currency" currencySymbol="$" locale="en_US" />
+                            </h:outputText>
+                        </span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Tasa Anual</f:facet>
+                        #{prestamo.interes}%
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Plazo</f:facet>
+                        #{prestamo.aniosPlazo} años
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Cuota Mensual</f:facet>
+                        <h:outputText value="#{prestamo.cuotaMensual}">
+                            <f:convertNumber type="currency" currencySymbol="$" />
+                        </h:outputText>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Acciones</f:facet>
+                        <div class="flex gap-2">
+                            <h:commandButton value="Aprobar" action="#{gerenteSucursalBean.aprobarPrestamo(prestamo.idPrestamo)}" 
+                                             styleClass="btn btn-success" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;" />
+                            <h:commandButton value="Rechazar" action="#{gerenteSucursalBean.rechazarPrestamo(prestamo.idPrestamo)}" 
+                                             styleClass="btn" style="background: var(--danger); color: white; padding: 0.25rem 0.75rem; font-size: 0.875rem;" />
+                        </div>
+                    </h:column>
+                </h:dataTable>
+                
+                <h:panelGroup rendered="#{empty gerenteSucursalBean.prestamosEnEspera}">
+                    <div style="padding: 2rem; text-align: center; color: var(--secondary);">
+                        No hay préstamos pendientes de aprobación en este momento.
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

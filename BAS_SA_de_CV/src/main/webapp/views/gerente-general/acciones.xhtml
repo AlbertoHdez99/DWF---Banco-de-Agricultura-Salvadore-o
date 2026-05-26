@@ -1,0 +1,74 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <f:metadata>
+        <f:viewAction action="#{gerenteGeneralBean.cargarAccionesFrescas}" />
+    </f:metadata>
+
+    <ui:define name="title">Acciones de Personal - Gerente General</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/gerente-general/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/gerente-general/acciones.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="clipboard-list" class="sidebar-icon"></i></span> Acciones de Personal
+        </h:link>
+        <h:link outcome="/views/gerente-general/sucursales.xhtml" styleClass="nav-link">
+            <span><i data-lucide="building-2" class="sidebar-icon"></i></span> Sucursales
+        </h:link>
+        <h:link outcome="/views/gerente-general/movimientos.xhtml" styleClass="nav-link">
+            <span><i data-lucide="bar-chart-3" class="sidebar-icon"></i></span> Auditoría Movimientos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Aprobación de Acciones de Personal</h2>
+        
+        <div class="card">
+            <h:form id="accionesForm">
+                <h:dataTable value="#{gerenteGeneralBean.accionesPendientes}" var="accion" styleClass="data-table">
+                    <h:column>
+                        <f:facet name="header">Fecha Solicitud</f:facet>
+                        <h:outputText value="#{accion.fechaSolicitud}">
+                            <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm" />
+                        </h:outputText>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Tipo Acción</f:facet>
+                        <span class="badge #{accion.tipoAccion.name() == 'ContrataciA3n' || accion.tipoAccion.name() == 'Contratación' ? 'badge-active' : 'badge-inactive'}">
+                            #{accion.tipoAccion}
+                        </span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Empleado Afectado</f:facet>
+                        #{accion.empleado.usuario.nombres} #{accion.empleado.usuario.apellidos}<br/>
+                        <small style="color: var(--secondary);">Cargo: #{accion.empleado.cargo}</small>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Sucursal</f:facet>
+                        #{accion.empleado.sucursal.nombreSucursal}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Acciones</f:facet>
+                        <div class="flex gap-2">
+                            <h:commandButton value="Aprobar" action="#{gerenteGeneralBean.aprobarAccion(accion.idAccion)}" 
+                                             styleClass="btn btn-success" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;" />
+                            <h:commandButton value="Rechazar" action="#{gerenteGeneralBean.rechazarAccion(accion.idAccion)}" 
+                                             styleClass="btn" style="background: var(--danger); color: white; padding: 0.25rem 0.75rem; font-size: 0.875rem;" />
+                        </div>
+                    </h:column>
+                </h:dataTable>
+                
+                <h:panelGroup rendered="#{empty gerenteGeneralBean.accionesPendientes}">
+                    <div style="padding: 2rem; text-align: center; color: var(--secondary);">
+                        No hay acciones de personal pendientes de aprobación en este momento.
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

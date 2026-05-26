@@ -1,0 +1,80 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="primefaces"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Registro Usuarios - Cajero</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/cajero/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/cajero/registro.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="users" class="sidebar-icon"></i></span> Registro Usuarios
+        </h:link>
+        <h:link outcome="/views/cajero/operaciones.xhtml" styleClass="nav-link">
+            <span><i data-lucide="banknote" class="sidebar-icon"></i></span> Operaciones Caja
+        </h:link>
+        <h:link outcome="/views/cajero/prestamos.xhtml" styleClass="nav-link">
+            <span><i data-lucide="file-text" class="sidebar-icon"></i></span> Préstamos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Registro de Clientes y Dependientes</h2>
+        
+        <div class="card" style="max-width: 600px;">
+            <div class="card-title">Formulario de Registro</div>
+            <h:form id="registroFormCajero">
+                <div class="form-group">
+                    <h:outputLabel value="Tipo de Usuario" styleClass="form-label"/>
+                    <h:selectOneMenu value="#{cajeroBean.tipoRegistro}" styleClass="form-control">
+                        <f:selectItem itemLabel="Cliente" itemValue="Cliente" />
+                        <f:selectItem itemLabel="Dependiente" itemValue="Dependiente" />
+                        <f:ajax render="panelSalario" />
+                    </h:selectOneMenu>
+                </div>
+
+                <div class="flex gap-4 mb-4">
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <h:outputLabel value="Nombres" styleClass="form-label"/>
+                        <h:inputText value="#{cajeroBean.nuevoUsuario.nombres}" required="true" styleClass="form-control" />
+                    </div>
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <h:outputLabel value="Apellidos" styleClass="form-label"/>
+                        <h:inputText value="#{cajeroBean.nuevoUsuario.apellidos}" required="true" styleClass="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel value="DUI" styleClass="form-label"/>
+                    <p:inputMask value="#{cajeroBean.nuevoUsuario.dui}" mask="99999999-9" validateMask="true" required="true" styleClass="form-control" />
+                </div>
+                
+                <div class="form-group">
+                    <h:outputLabel value="Email" styleClass="form-label"/>
+                    <h:inputText value="#{cajeroBean.nuevoUsuario.email}" required="true" styleClass="form-control" />
+                </div>
+                
+                <div class="form-group">
+                    <h:outputLabel value="Contraseña (Provisional)" styleClass="form-label"/>
+                    <h:inputSecret value="#{cajeroBean.nuevoUsuario.password}" required="true" styleClass="form-control" />
+                </div>
+
+                <h:panelGroup id="panelSalario">
+                    <h:panelGroup layout="block" styleClass="form-group" rendered="#{cajeroBean.tipoRegistro eq 'Cliente'}">
+                        <h:outputLabel value="Salario Promedio ($) - Solo para Clientes" styleClass="form-label"/>
+                        <h:inputText value="#{cajeroBean.nuevoUsuario.salario}" styleClass="form-control mascara-monto">
+                            <f:convertNumber pattern="#0.00" />
+                        </h:inputText>
+                    </h:panelGroup>
+
+                <div class="form-group mt-4">
+                    <h:commandButton value="Registrar Usuario" action="#{cajeroBean.registrarUsuario}" styleClass="btn btn-primary" style="width: 100%;" />
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

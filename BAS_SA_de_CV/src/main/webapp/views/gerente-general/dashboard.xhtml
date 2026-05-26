@@ -1,0 +1,50 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Dashboard - Gerente General</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/gerente-general/dashboard.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/gerente-general/acciones.xhtml" styleClass="nav-link">
+            <span><i data-lucide="clipboard-list" class="sidebar-icon"></i></span> Acciones de Personal
+        </h:link>
+        <h:link outcome="/views/gerente-general/sucursales.xhtml" styleClass="nav-link">
+            <span><i data-lucide="building-2" class="sidebar-icon"></i></span> Sucursales
+        </h:link>
+        <h:link outcome="/views/gerente-general/movimientos.xhtml" styleClass="nav-link">
+            <span><i data-lucide="bar-chart-3" class="sidebar-icon"></i></span> Auditoría Movimientos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Panel de Administración General</h2>
+        
+        <div class="flex gap-4">
+            <div class="card text-center" style="flex: 1;">
+                <div style="margin-bottom: 1rem;"><i data-lucide="clipboard-list" class="sidebar-icon" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+                <h3 style="margin-bottom: 0.5rem;">Acciones de Personal</h3>
+                <p style="color: var(--secondary); margin-bottom: 1rem;">Aprobar contrataciones y bajas.</p>
+                <h:link outcome="/views/gerente-general/acciones.xhtml" styleClass="btn btn-primary">Ir a Acciones</h:link>
+            </div>
+            
+            <div class="card text-center" style="flex: 1;">
+                <div style="margin-bottom: 1rem;"><i data-lucide="building-2" class="sidebar-icon" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+                <h3 style="margin-bottom: 0.5rem;">Gestión de Sucursales</h3>
+                <p style="color: var(--secondary); margin-bottom: 1rem;">Crear sucursales y asignar gerentes.</p>
+                <h:link outcome="/views/gerente-general/sucursales.xhtml" styleClass="btn btn-primary">Ir a Sucursales</h:link>
+            </div>
+            
+            <div class="card text-center" style="flex: 1;">
+                <div style="margin-bottom: 1rem;"><i data-lucide="bar-chart-3" class="sidebar-icon" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+                <h3 style="margin-bottom: 0.5rem;">Auditoría General</h3>
+                <p style="color: var(--secondary); margin-bottom: 1rem;">Ver todos los movimientos del banco.</p>
+                <h:link outcome="/views/gerente-general/movimientos.xhtml" styleClass="btn btn-primary">Ver Movimientos</h:link>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

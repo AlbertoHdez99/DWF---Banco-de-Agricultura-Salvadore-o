@@ -1,0 +1,47 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Dashboard - Gerente Sucursal</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/gerente-sucursal/dashboard.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/gerente-sucursal/empleados.xhtml" styleClass="nav-link">
+            <span><i data-lucide="users" class="sidebar-icon"></i></span> Gestionar Personal
+        </h:link>
+        <h:link outcome="/views/gerente-sucursal/prestamos.xhtml" styleClass="nav-link">
+            <span><i data-lucide="file-text" class="sidebar-icon"></i></span> Aprobar Préstamos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Panel de Control de la Sucursal</h2>
+        
+        <div class="card" style="margin-bottom: 2rem;">
+            <p style="font-size: 1.1rem; color: var(--secondary);">
+                Sucursal Asignada: <strong>#{gerenteSucursalBean.empleadoGerente.sucursal.nombreSucursal}</strong><br/>
+                Dirección: #{gerenteSucursalBean.empleadoGerente.sucursal.direccion}
+            </p>
+        </div>
+
+        <div class="flex gap-4">
+            <div class="card text-center" style="flex: 1;">
+                <div style="margin-bottom: 1rem;"><i data-lucide="users" class="sidebar-icon" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+                <h3 style="margin-bottom: 0.5rem;">Gestión de Personal</h3>
+                <p style="color: var(--secondary); margin-bottom: 1rem;">Registrar y dar de baja empleados en esta sucursal.</p>
+                <h:link outcome="/views/gerente-sucursal/empleados.xhtml" styleClass="btn btn-primary">Ir a Personal</h:link>
+            </div>
+            
+            <div class="card text-center" style="flex: 1;">
+                <div style="margin-bottom: 1rem;"><i data-lucide="file-text" class="sidebar-icon" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+                <h3 style="margin-bottom: 0.5rem;">Aprobación de Préstamos</h3>
+                <p style="color: var(--secondary); margin-bottom: 1rem;">Revisar solicitudes de préstamos de la sucursal.</p>
+                <h:link outcome="/views/gerente-sucursal/prestamos.xhtml" styleClass="btn btn-primary">Ir a Préstamos</h:link>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

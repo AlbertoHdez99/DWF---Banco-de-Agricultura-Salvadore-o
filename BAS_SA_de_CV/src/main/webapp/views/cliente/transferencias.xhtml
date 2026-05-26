@@ -1,0 +1,55 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Transferencias - BAS</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/cliente/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/cliente/movimientos.xhtml" styleClass="nav-link">
+            <span><i data-lucide="bar-chart-3" class="sidebar-icon"></i></span> Mis Movimientos
+        </h:link>
+        <h:link outcome="/views/cliente/transferencias.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="arrow-left-right" class="sidebar-icon"></i></span> Transferencias
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Transferencias entre Cuentas</h2>
+        
+        <div class="card" style="max-width: 600px;">
+            <div class="card-title">Nueva Transferencia</div>
+            <h:form>
+                <div class="form-group">
+                    <h:outputLabel value="Cuenta Origen" styleClass="form-label"/>
+                    <h:selectOneMenu value="#{clienteBean.cuentaOrigen}" required="true" styleClass="form-control" requiredMessage="Seleccione una cuenta de origen">
+                        <f:selectItem itemLabel="-- Seleccionar Mi Cuenta --" itemValue="" />
+                        <f:selectItems value="#{clienteBean.misCuentas}" var="cta" 
+                                       itemLabel="#{cta.numeroCuenta} - Saldo: $#{cta.saldo}" 
+                                       itemValue="#{cta.numeroCuenta}" />
+                    </h:selectOneMenu>
+                </div>
+                
+                <div class="form-group">
+                    <h:outputLabel value="Cuenta Destino (Numero)" styleClass="form-label"/>
+                    <h:inputText value="#{clienteBean.cuentaDestino}" required="true" styleClass="form-control" requiredMessage="Ingrese la cuenta destino"/>
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel value="Monto a Transferir ($)" styleClass="form-label"/>
+                    <h:inputText value="#{clienteBean.montoTransferencia}" required="true" styleClass="form-control mascara-monto" requiredMessage="Ingrese un monto">
+                        <f:convertNumber pattern="#0.00" />
+                    </h:inputText>
+                </div>
+                
+                <div class="form-group mt-4 text-right">
+                    <h:commandButton value="Realizar Transferencia" action="#{clienteBean.realizarTransferencia}" styleClass="btn btn-primary" style="width: 100%;" />
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

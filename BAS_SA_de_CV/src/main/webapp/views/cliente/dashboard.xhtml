@@ -1,0 +1,57 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Dashboard Cliente - BAS</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/cliente/dashboard.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/cliente/movimientos.xhtml" styleClass="nav-link">
+            <span><i data-lucide="bar-chart-3" class="sidebar-icon"></i></span> Mis Movimientos
+        </h:link>
+        <h:link outcome="/views/cliente/transferencias.xhtml" styleClass="nav-link">
+            <span><i data-lucide="arrow-left-right" class="sidebar-icon"></i></span> Transferencias
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="flex justify-between items-center mb-4">
+            <h2 style="font-size: 1.5rem; font-weight: 700;">Mis Cuentas Bancarias</h2>
+            <h:form>
+                <h:commandButton value="Crear Nueva Cuenta" action="#{clienteBean.crearCuenta}" styleClass="btn btn-success" />
+            </h:form>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">Cuentas Activas</div>
+            <h:dataTable value="#{clienteBean.misCuentas}" var="cta" styleClass="data-table">
+                <h:column>
+                    <f:facet name="header">Número de Cuenta</f:facet>
+                    <span style="font-family: monospace; font-size: 1.1rem;">#{cta.numeroCuenta}</span>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Saldo Disponible</f:facet>
+                    <span style="font-weight: 600; color: var(--success);">
+                        <h:outputText value="#{cta.saldo}">
+                            <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2" />
+                        </h:outputText>
+                    </span>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Estado</f:facet>
+                    <span class="badge badge-active">Activa</span>
+                </h:column>
+            </h:dataTable>
+            
+            <h:panelGroup rendered="#{empty clienteBean.misCuentas}">
+                <div style="padding: 2rem; text-align: center; color: var(--secondary);">
+                    No tienes cuentas creadas aún. ¡Crea una para comenzar!
+                </div>
+            </h:panelGroup>
+        </div>
+    </ui:define>
+</ui:composition>

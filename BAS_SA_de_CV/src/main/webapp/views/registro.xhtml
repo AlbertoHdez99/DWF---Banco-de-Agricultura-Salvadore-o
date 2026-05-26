@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="primefaces">
+<h:head>
+    <title>Registro - Banco de Agricultura Salvadoreño</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;🏦&lt;/text&gt;&lt;/svg&gt;" />
+    <h:outputStylesheet name="css/style.css" />
+    <script src="#{request.contextPath}/resources/js/lucide.min.js"></script>
+</h:head>
+<h:body>
+    <div class="auth-container">
+        <div class="auth-card" style="max-width: 600px;">
+            <div class="auth-title">
+                <i data-lucide="landmark" class="sidebar-icon" style="display:inline-block;vertical-align:middle;width:28px;height:28px;"></i> BAS
+                <div style="font-size: 1rem; color: var(--secondary); font-weight: 500; margin-top: 0.5rem;">
+                    Crear cuenta de cliente
+                </div>
+            </div>
+            
+            <h:messages globalOnly="true" infoClass="info" warnClass="warn" errorClass="error" styleClass="messages"/>
+
+            <h:form id="registroForm">
+                <div class="flex gap-4 mb-4">
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <h:outputLabel for="nombres" value="Nombres" styleClass="form-label"/>
+                        <h:inputText id="nombres" value="#{registroBean.nombres}" required="true" styleClass="form-control" />
+                    </div>
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <h:outputLabel for="apellidos" value="Apellidos" styleClass="form-label"/>
+                        <h:inputText id="apellidos" value="#{registroBean.apellidos}" required="true" styleClass="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="dui" value="DUI (Ej: 12345678-9)" styleClass="form-label"/>
+                    <p:inputMask id="dui" value="#{registroBean.dui}" mask="99999999-9" validateMask="true" required="true" styleClass="form-control" />
+                </div>
+                
+                <div class="form-group">
+                    <h:outputLabel for="email" value="Correo Electrónico" styleClass="form-label"/>
+                    <h:inputText id="email" value="#{registroBean.email}" required="true" styleClass="form-control" />
+                </div>
+                
+                <div class="form-group">
+                    <h:outputLabel for="password" value="Contraseña" styleClass="form-label"/>
+                    <h:inputSecret id="password" value="#{registroBean.password}" required="true" styleClass="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <h:outputLabel for="salario" value="Salario Promedio Mensual ($)" styleClass="form-label"/>
+                    <h:inputText id="salario" value="#{registroBean.salario}" styleClass="form-control mascara-monto">
+                        <f:convertNumber pattern="#0.00" />
+                    </h:inputText>
+                    <small style="color: var(--secondary);">Opcional. Si no posee empleo formal, déjelo en blanco.</small>
+                </div>
+                
+                <div class="form-group mt-4">
+                    <h:commandButton value="Registrarse" action="#{registroBean.registrar}" styleClass="btn btn-primary" style="width: 100%;" />
+                </div>
+                
+                <div class="text-center mt-4">
+                    <span style="color: var(--secondary);">¿Ya tienes cuenta? </span>
+                    <h:link outcome="/views/login.xhtml" value="Inicia sesión" style="color: var(--primary); font-weight: 600; text-decoration: none;" />
+                </div>
+            </h:form>
+    </div>
+
+    <!-- Script de máscara de montos monetarios -->
+    <script>
+        //<![CDATA[
+        document.addEventListener("DOMContentLoaded", function() {
+            function aplicarMascaraMonto(input) {
+                if (input.dataset.maskApplied) return;
+                input.dataset.maskApplied = "true";
+
+                input.addEventListener('input', function() {
+                    let value = this.value;
+                    value = value.replace(/,/g, '.');
+                    value = value.replace(/[^0-9.]/g, '');
+                    
+                    const parts = value.split('.');
+                    if (parts.length > 2) {
+                        value = parts[0] + '.' + parts.slice(1).join('');
+                    }
+                    
+                    if (parts.length === 2 && parts[1].length > 2) {
+                        value = parts[0] + '.' + parts[1].substring(0, 2);
+                    }
+                    
+                    this.value = value;
+                });
+
+                input.addEventListener('blur', function() {
+                    let value = this.value.trim();
+                    if (value === '') return;
+                    
+                    let num = parseFloat(value);
+                    if (isNaN(num)) {
+                        this.value = '';
+                    } else {
+                        this.value = num.toFixed(2);
+                    }
+                    this.dispatchEvent(new Event('change'));
+                });
+            }
+
+            document.querySelectorAll('.mascara-monto').forEach(aplicarMascaraMonto);
+            if(typeof lucide!=='undefined'){lucide.createIcons();}
+        });
+        //]]>
+    </script>
+</h:body>
+</html>

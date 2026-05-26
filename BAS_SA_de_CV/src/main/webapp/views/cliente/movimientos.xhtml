@@ -1,0 +1,77 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Mis Movimientos - BAS</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/cliente/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/cliente/movimientos.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="bar-chart-3" class="sidebar-icon"></i></span> Mis Movimientos
+        </h:link>
+        <h:link outcome="/views/cliente/transferencias.xhtml" styleClass="nav-link">
+            <span><i data-lucide="arrow-left-right" class="sidebar-icon"></i></span> Transferencias
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Historial de Movimientos</h2>
+        
+        <div class="card mb-4">
+            <h:form>
+                <div class="form-group" style="max-width: 400px;">
+                    <h:outputLabel value="Seleccione una cuenta" styleClass="form-label"/>
+                    <div class="flex gap-2">
+                        <h:selectOneMenu value="#{clienteBean.idCuentaSeleccionada}" styleClass="form-control">
+                            <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                            <f:selectItems value="#{clienteBean.misCuentas}" var="cta" 
+                                           itemLabel="#{cta.numeroCuenta} - Saldo: $#{cta.saldo}" 
+                                           itemValue="#{cta.idCuenta}" />
+                        </h:selectOneMenu>
+                        <h:commandButton value="Ver Movimientos" action="#{clienteBean.verMovimientos(clienteBean.idCuentaSeleccionada)}" styleClass="btn btn-primary" />
+                    </div>
+                </div>
+            </h:form>
+        </div>
+
+        <h:panelGroup rendered="#{not empty clienteBean.movimientosSeleccionados}">
+            <div class="card">
+                <div class="card-title">Movimientos Recientes</div>
+                <h:dataTable value="#{clienteBean.movimientosSeleccionados}" var="mov" styleClass="data-table">
+                    <h:column>
+                        <f:facet name="header">Fecha</f:facet>
+                        <h:outputText value="#{mov.fechaMovimiento}">
+                            <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm" />
+                        </h:outputText>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Tipo</f:facet>
+                        <span class="badge #{mov.tipoMovimiento.name() == 'Retiro' ? 'badge-inactive' : (mov.tipoMovimiento.name() == 'Transferencia' ? 'badge-pending' : 'badge-active')}">
+                            #{mov.tipoMovimiento.name() == 'Retiro' ? 'Retiro' : (mov.tipoMovimiento.name() == 'Transferencia' ? 'Transferencia' : 'Depósito')}
+                        </span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Monto</f:facet>
+                        <span style="font-weight: 600; color: #{mov.tipoMovimiento.name() == 'Retiro' or mov.tipoMovimiento.name() == 'Transferencia' ? 'var(--danger)' : 'var(--success)'};">
+                            <h:outputText value="#{mov.tipoMovimiento.name() == 'Retiro' or mov.tipoMovimiento.name() == 'Transferencia' ? '-' : '+'} " />
+                            <h:outputText value="#{mov.monto}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2" />
+                            </h:outputText>
+                        </span>
+                    </h:column>
+                </h:dataTable>
+            </div>
+        </h:panelGroup>
+        
+        <h:panelGroup rendered="#{empty clienteBean.movimientosSeleccionados and clienteBean.idCuentaSeleccionada != null}">
+            <div class="card text-center" style="color: var(--secondary);">
+                No hay movimientos para la cuenta seleccionada.
+            </div>
+        </h:panelGroup>
+
+    </ui:define>
+</ui:composition>

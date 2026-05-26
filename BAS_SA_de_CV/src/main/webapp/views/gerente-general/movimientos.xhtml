@@ -1,0 +1,69 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Auditoría Movimientos - Gerente General</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/gerente-general/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/gerente-general/acciones.xhtml" styleClass="nav-link">
+            <span><i data-lucide="clipboard-list" class="sidebar-icon"></i></span> Acciones de Personal
+        </h:link>
+        <h:link outcome="/views/gerente-general/sucursales.xhtml" styleClass="nav-link">
+            <span><i data-lucide="building-2" class="sidebar-icon"></i></span> Sucursales
+        </h:link>
+        <h:link outcome="/views/gerente-general/movimientos.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="bar-chart-3" class="sidebar-icon"></i></span> Auditoría Movimientos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Auditoría General de Movimientos</h2>
+        
+        <div class="card">
+            <div class="card-title">Todos los Movimientos del Banco</div>
+            
+            <h:form id="movimientosForm">
+                <h:dataTable value="#{gerenteGeneralBean.todosMovimientos}" var="mov" styleClass="data-table">
+                    <h:column>
+                        <f:facet name="header">ID Mov.</f:facet>
+                        #{mov.idMovimiento}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Fecha</f:facet>
+                        <h:outputText value="#{mov.fechaMovimiento}">
+                            <f:convertDateTime type="localDateTime" pattern="dd/MM/yyyy HH:mm:ss" />
+                        </h:outputText>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Cuenta</f:facet>
+                        <span style="font-family: monospace;">#{mov.cuentaOrigen != null ? mov.cuentaOrigen.numeroCuenta : 'N/A'}</span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Tipo</f:facet>
+                        <span class="badge #{mov.tipoMovimiento.name() == 'Retiro' ? 'badge-inactive' : (mov.tipoMovimiento.name() == 'Transferencia' ? 'badge-pending' : 'badge-active')}">
+                            #{mov.tipoMovimiento.name() == 'Retiro' ? 'Retiro' : (mov.tipoMovimiento.name() == 'Transferencia' ? 'Transferencia' : 'Depósito')}
+                        </span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Monto</f:facet>
+                        <span style="font-weight: 600; color: #{mov.tipoMovimiento.name() == 'Retiro' or mov.tipoMovimiento.name() == 'Transferencia' ? 'var(--danger)' : 'var(--success)'};">
+                            <h:outputText value="#{mov.tipoMovimiento.name() == 'Retiro' or mov.tipoMovimiento.name() == 'Transferencia' ? '-' : '+'} " />
+                            <h:outputText value="#{mov.monto}">
+                                <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2" />
+                            </h:outputText>
+                        </span>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Ejecutor</f:facet>
+                        #{mov.usuarioEjecutor != null ? mov.usuarioEjecutor.nombres.concat(' ').concat(mov.usuarioEjecutor.apellidos) : 'N/A'}
+                    </h:column>
+                </h:dataTable>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

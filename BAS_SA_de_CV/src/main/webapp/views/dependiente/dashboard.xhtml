@@ -1,0 +1,45 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Dashboard - Dependiente</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/dependiente/dashboard.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/dependiente/operaciones.xhtml" styleClass="nav-link">
+            <span><i data-lucide="credit-card" class="sidebar-icon"></i></span> Operaciones (Comercio)
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Panel de Dependiente / Comercio Afiliado</h2>
+        
+        <div class="card" style="margin-bottom: 2rem;">
+            <p style="font-size: 1.1rem; color: var(--secondary);">
+                Comercio: <strong>#{dependienteBean.entidadDependiente.nombreComercio}</strong><br/>
+                Recordatorio: Todas las operaciones realizadas a través de este canal generan automáticamente un <strong>5% de comisión</strong> a tu favor.
+            </p>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <span style="font-size: 1.1rem; color: var(--secondary);">Total Comisiones Ganadas:</span>
+                <span style="font-size: 1.5rem; font-weight: bold; color: var(--success); margin-left: 0.5rem;">
+                    <h:outputText value="#{dependienteBean.totalComisiones}">
+                        <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2" minFractionDigits="2" />
+                    </h:outputText>
+                </span>
+            </div>
+        </div>
+
+        <div class="flex gap-4">
+            <div class="card text-center" style="flex: 1;">
+                <div style="margin-bottom: 1rem;"><i data-lucide="credit-card" class="sidebar-icon" style="width:48px;height:48px;stroke-width:1.5;"></i></div>
+                <h3 style="margin-bottom: 0.5rem;">Operaciones de Cliente</h3>
+                <p style="color: var(--secondary); margin-bottom: 1rem;">Buscar cliente por DUI y realizar depósitos o retiros.</p>
+                <h:link outcome="/views/dependiente/operaciones.xhtml" styleClass="btn btn-primary">Ir a Operaciones</h:link>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

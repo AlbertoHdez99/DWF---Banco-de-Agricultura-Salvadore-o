@@ -1,0 +1,69 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Préstamos - Cajero</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/cajero/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/cajero/registro.xhtml" styleClass="nav-link">
+            <span><i data-lucide="users" class="sidebar-icon"></i></span> Registro Usuarios
+        </h:link>
+        <h:link outcome="/views/cajero/operaciones.xhtml" styleClass="nav-link">
+            <span><i data-lucide="banknote" class="sidebar-icon"></i></span> Operaciones Caja
+        </h:link>
+        <h:link outcome="/views/cajero/prestamos.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="file-text" class="sidebar-icon"></i></span> Préstamos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Apertura de Préstamos</h2>
+        
+        <div class="card" style="max-width: 600px;">
+            <div class="card-title">1. Buscar Cliente</div>
+            <h:form id="buscarClienteForm">
+                <div class="flex gap-2">
+                    <h:inputText value="#{cajeroBean.prestamoDui}" required="true" styleClass="form-control mascara-dui" />
+                    <h:commandButton value="Buscar DUI" action="#{cajeroBean.buscarClientePrestamo}" styleClass="btn btn-secondary" />
+                </div>
+            </h:form>
+        </div>
+
+        <h:panelGroup rendered="#{cajeroBean.clientePrestamo != null}">
+            <div class="card" style="max-width: 600px;">
+                <div class="card-title">2. Información del Cliente</div>
+                <p><strong>Nombres:</strong> #{cajeroBean.clientePrestamo.nombres} #{cajeroBean.clientePrestamo.apellidos}</p>
+                <p><strong>Salario Declarado:</strong> $#{cajeroBean.clientePrestamo.salario}</p>
+                
+                <hr style="margin: 1rem 0; border: 0; border-top: 1px solid var(--border);" />
+                
+                <h:form id="calcularPrestamoForm">
+                    <div class="form-group">
+                        <h:outputLabel value="Monto Solicitado ($)" styleClass="form-label"/>
+                        <h:inputText value="#{cajeroBean.prestamoMonto}" required="true" styleClass="form-control mascara-monto">
+                            <f:convertNumber pattern="#0.00" />
+                        </h:inputText>
+                    </div>
+                    
+                    <h:commandButton value="Calcular Cuota" action="#{cajeroBean.calcularPrestamo}" styleClass="btn btn-secondary mb-4" />
+                    
+                    <h:panelGroup rendered="#{cajeroBean.prestamoCuotaCalculada != null}">
+                        <div style="background: var(--background); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem;">
+                            <p style="margin-bottom: 0.5rem;"><strong>Resultado del Cálculo:</strong></p>
+                            <p>Cuota Mensual: <span style="font-weight: bold; color: var(--primary);">$#{cajeroBean.prestamoCuotaCalculada}</span></p>
+                            <p>Plazo Estimado: <strong>#{cajeroBean.prestamoAniosCalculados} años</strong></p>
+                        </div>
+                        
+                        <h:commandButton value="Confirmar Solicitud de Préstamo" action="#{cajeroBean.abrirPrestamo}" styleClass="btn btn-primary" style="width: 100%;" />
+                    </h:panelGroup>
+                </h:form>
+            </div>
+        </h:panelGroup>
+
+    </ui:define>
+</ui:composition>

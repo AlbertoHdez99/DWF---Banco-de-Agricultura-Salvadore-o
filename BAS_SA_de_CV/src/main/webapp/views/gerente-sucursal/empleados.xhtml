@@ -1,0 +1,102 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Personal - Gerente Sucursal</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/gerente-sucursal/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/gerente-sucursal/empleados.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="users" class="sidebar-icon"></i></span> Gestionar Personal
+        </h:link>
+        <h:link outcome="/views/gerente-sucursal/prestamos.xhtml" styleClass="nav-link">
+            <span><i data-lucide="file-text" class="sidebar-icon"></i></span> Aprobar Préstamos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="flex justify-between items-center mb-4">
+            <h2 style="font-size: 1.5rem; font-weight: 700;">Gestión de Personal</h2>
+        </div>
+        
+        <div class="flex gap-4" style="align-items: flex-start;">
+            <!-- Formulario de Registro -->
+            <div class="card" style="flex: 1; max-width: 400px;">
+                <div class="card-title">Contratar Nuevo Empleado</div>
+                <h:form id="registroEmpleadoForm">
+                    <div class="form-group">
+                        <h:outputLabel value="Rol de Empleado" styleClass="form-label"/>
+                        <h:selectOneMenu value="#{gerenteSucursalBean.rolNuevoEmpleado}" styleClass="form-control">
+                            <f:selectItem itemLabel="Cajero" itemValue="Cajero" />
+                            <f:selectItem itemLabel="Personal de Limpieza" itemValue="Personal de Limpieza" />
+                            <f:selectItem itemLabel="Secretaria" itemValue="Secretaria" />
+                            <f:selectItem itemLabel="Asesor Financiero" itemValue="Asesor Financiero" />
+                        </h:selectOneMenu>
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel value="Nombres" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteSucursalBean.nuevoEmpleado.nombres}" required="true" styleClass="form-control" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <h:outputLabel value="Apellidos" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteSucursalBean.nuevoEmpleado.apellidos}" required="true" styleClass="form-control" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <h:outputLabel value="DUI" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteSucursalBean.nuevoEmpleado.dui}" required="true" styleClass="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel value="Email" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteSucursalBean.nuevoEmpleado.email}" required="true" styleClass="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel value="Contraseña (Provisional)" styleClass="form-label"/>
+                        <h:inputSecret value="#{gerenteSucursalBean.nuevoEmpleado.password}" required="true" styleClass="form-control" />
+                    </div>
+                    
+                    <div class="form-group mt-4">
+                        <h:commandButton value="Contratar y Generar Acción" action="#{gerenteSucursalBean.registrarEmpleado}" styleClass="btn btn-primary" style="width: 100%;" />
+                    </div>
+                </h:form>
+            </div>
+
+            <!-- Lista de Empleados -->
+            <div class="card" style="flex: 2;">
+                <div class="card-title">Personal de la Sucursal</div>
+                <h:form id="listaEmpleadosForm">
+                    <h:dataTable value="#{gerenteSucursalBean.empleadosSucursal}" var="emp" styleClass="data-table">
+                        <h:column>
+                            <f:facet name="header">Nombre</f:facet>
+                            #{emp.usuario.nombres} #{emp.usuario.apellidos}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Cargo / Rol</f:facet>
+                            #{emp.cargo}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Estado Contratación</f:facet>
+                            <span class="badge #{emp.estadoContratacion == 'Activo' ? 'badge-active' : (emp.estadoContratacion == 'Inactivo' ? 'badge-inactive' : 'badge-pending')}">
+                                #{emp.estadoContratacion}
+                            </span>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Acciones</f:facet>
+                            <h:commandButton value="Dar de Baja" action="#{gerenteSucursalBean.darDeBaja(emp.idEmpleado)}" 
+                                             rendered="#{emp.estadoContratacion == 'Activo' and emp.usuario.idUsuario != gerenteSucursalBean.gerenteActual.idUsuario}"
+                                             styleClass="btn" style="background: var(--danger); color: white; padding: 0.25rem 0.75rem; font-size: 0.875rem;"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

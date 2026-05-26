@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+<h:head>
+    <title>Iniciar Sesión - Banco de Agricultura Salvadoreño</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;🏦&lt;/text&gt;&lt;/svg&gt;" />
+    <h:outputStylesheet name="css/style.css" />
+    <script src="#{request.contextPath}/resources/js/lucide.min.js"></script>
+</h:head>
+<h:body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-title">
+                <i data-lucide="landmark" class="sidebar-icon" style="display:inline-block;vertical-align:middle;width:28px;height:28px;"></i> BAS
+                <div style="font-size: 1rem; color: var(--secondary); font-weight: 500; margin-top: 0.5rem;">
+                    Bienvenido de nuevo
+                </div>
+            </div>
+            
+            <h:messages globalOnly="true" infoClass="info" warnClass="warn" errorClass="error" styleClass="messages"/>
+
+            <h:form id="loginForm">
+                <div class="form-group">
+                    <h:outputLabel for="email" value="Correo Electrónico" styleClass="form-label"/>
+                    <h:inputText id="email" value="#{loginBean.email}" required="true" styleClass="form-control" 
+                                 requiredMessage="El correo es obligatorio"/>
+                    <h:message for="email" style="color: var(--danger); font-size: 0.875rem;" />
+                </div>
+                
+                <div class="form-group">
+                    <h:outputLabel for="password" value="Contraseña" styleClass="form-label"/>
+                    <h:inputSecret id="password" value="#{loginBean.password}" required="true" styleClass="form-control"
+                                   requiredMessage="La contraseña es obligatoria"/>
+                    <h:message for="password" style="color: var(--danger); font-size: 0.875rem;" />
+                </div>
+                
+                <div class="form-group mt-4">
+                    <h:commandButton value="Iniciar Sesión" action="#{loginBean.login}" styleClass="btn btn-primary" style="width: 100%;" />
+                </div>
+                
+                <div class="text-center mt-4">
+                    <span style="color: var(--secondary);">¿No tienes cuenta? </span>
+                    <h:link outcome="/views/registro.xhtml" value="Regístrate aquí" style="color: var(--primary); font-weight: 600; text-decoration: none;" />
+                </div>
+            </h:form>
+        </div>
+    </div>
+    <script>if(typeof lucide!=='undefined'){lucide.createIcons();}</script>
+</h:body>
+</html>

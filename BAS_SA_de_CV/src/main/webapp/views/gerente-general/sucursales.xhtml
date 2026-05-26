@@ -1,0 +1,108 @@
+<ui:composition template="/views/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets">
+
+    <ui:define name="title">Sucursales - Gerente General</ui:define>
+
+    <ui:define name="sidebar-menu">
+        <h:link outcome="/views/gerente-general/dashboard.xhtml" styleClass="nav-link">
+            <span><i data-lucide="home" class="sidebar-icon"></i></span> Dashboard
+        </h:link>
+        <h:link outcome="/views/gerente-general/acciones.xhtml" styleClass="nav-link">
+            <span><i data-lucide="clipboard-list" class="sidebar-icon"></i></span> Acciones de Personal
+        </h:link>
+        <h:link outcome="/views/gerente-general/sucursales.xhtml" styleClass="nav-link active">
+            <span><i data-lucide="building-2" class="sidebar-icon"></i></span> Sucursales
+        </h:link>
+        <h:link outcome="/views/gerente-general/movimientos.xhtml" styleClass="nav-link">
+            <span><i data-lucide="bar-chart-3" class="sidebar-icon"></i></span> Auditoría Movimientos
+        </h:link>
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="flex justify-between items-center mb-4">
+            <h2 style="font-size: 1.5rem; font-weight: 700;">Gestión de Sucursales</h2>
+        </div>
+        
+        <div class="flex gap-4" style="align-items: flex-start;">
+            <!-- Formulario de Sucursal -->
+            <div class="card" style="flex: 1; max-width: 400px;">
+                <div class="card-title">Aperturar Nueva Sucursal</div>
+                <h:form id="crearSucursalForm">
+                    <div class="form-group">
+                        <h:outputLabel value="Nombre de la Sucursal" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteGeneralBean.nuevaSucursal.nombreSucursal}" required="true" styleClass="form-control" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <h:outputLabel value="Dirección" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteGeneralBean.nuevaSucursal.direccion}" required="true" styleClass="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <h:outputLabel value="Email del Gerente a Asignar" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteGeneralBean.emailGerenteAsignar}" styleClass="form-control" />
+                        <small style="color: var(--secondary);">El usuario ya debe estar registrado en el sistema.</small>
+                    </div>
+                    
+                    <div class="form-group mt-4">
+                        <h:commandButton value="Crear Sucursal" action="#{gerenteGeneralBean.crearSucursal}" styleClass="btn btn-primary" style="width: 100%;" />
+                    </div>
+                </h:form>
+            </div>
+
+            <!-- Formulario de Nuevo Gerente -->
+            <div class="card" style="flex: 1; max-width: 400px;">
+                <div class="card-title">Registrar Nuevo Gerente</div>
+                <h:form id="crearGerenteForm">
+                    <div class="form-group">
+                        <h:outputLabel value="Nombres" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteGeneralBean.nuevoGerente.nombres}" required="true" styleClass="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel value="Apellidos" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteGeneralBean.nuevoGerente.apellidos}" required="true" styleClass="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel value="Email" styleClass="form-label"/>
+                        <h:inputText value="#{gerenteGeneralBean.nuevoGerente.email}" required="true" styleClass="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel value="Contraseña Temporal" styleClass="form-label"/>
+                        <h:inputSecret value="#{gerenteGeneralBean.nuevoGerente.password}" required="true" styleClass="form-control" />
+                    </div>
+                    <div class="form-group mt-4">
+                        <h:commandButton value="Registrar Gerente" action="#{gerenteGeneralBean.registrarNuevoGerente}" styleClass="btn btn-primary" style="width: 100%;" />
+                    </div>
+                </h:form>
+            </div>
+
+            <!-- Lista de Sucursales -->
+            <div class="card" style="flex: 2;">
+                <div class="card-title">Sucursales Activas</div>
+                <h:form id="listaSucursalesForm">
+                    <h:dataTable value="#{gerenteGeneralBean.sucursales}" var="suc" styleClass="data-table">
+                        <h:column>
+                            <f:facet name="header">ID</f:facet>
+                            #{suc.idSucursal}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Nombre</f:facet>
+                            #{suc.nombreSucursal}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Dirección</f:facet>
+                            #{suc.direccion}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Gerente Actual</f:facet>
+                            <h:outputText value="#{suc.gerente != null ? suc.gerente.nombres.concat(' ').concat(suc.gerente.apellidos) : 'No Asignado'}" style="font-weight: 500; color: #{suc.gerente != null ? 'var(--text-main)' : 'var(--danger)'};" />
+                        </h:column>
+                    </h:dataTable>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

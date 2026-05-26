@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+<h:head>
+    <title><ui:insert name="title">Banco de Agricultura Salvadoreño</ui:insert></title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;🏦&lt;/text&gt;&lt;/svg&gt;" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+    <h:outputStylesheet name="css/style.css" />
+    <!-- Lucide Icons Local (Soporte Offline Garantizado) -->
+    <script src="#{request.contextPath}/resources/js/lucide.min.js"></script>
+</h:head>
+<h:body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <span style="font-size: 1.5rem;"><i data-lucide="landmark" class="sidebar-icon"></i></span> BAS
+            </div>
+            <div class="sidebar-nav">
+                <!-- El menú se inyectará dinámicamente o por cada módulo usando ui:define -->
+                <ui:insert name="sidebar-menu">
+                    <!-- Default links if none provided -->
+                </ui:insert>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Topbar -->
+            <div class="topbar">
+                <div class="user-profile">
+                    <span>Bienvenido, <strong>#{sessionScope.nombreUsuario != null ? sessionScope.nombreUsuario : (request.remoteUser != null ? request.remoteUser : 'Usuario')}</strong></span>
+                    <h:form style="display:inline;">
+                        <h:commandButton action="#{loginBean.logout}" value="Cerrar Sesión" styleClass="btn-logout" />
+                    </h:form>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="content-wrapper">
+                <h:messages globalOnly="true" showDetail="true" infoClass="info" warnClass="warn" errorClass="error" styleClass="messages"/>
+                
+                <ui:insert name="content">
+                    <!-- Contenido principal -->
+                </ui:insert>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script global de máscaras (Montos y DUI) + Lucide Icons -->
+    <script>
+        //<![CDATA[
+        document.addEventListener("DOMContentLoaded", function() {
+            // ─── 1. Máscara para Montos Monetarios ─────────────────────────────
+            function aplicarMascaraMonto(input) {
+                if (input.dataset.maskApplied) return;
+                input.dataset.maskApplied = "true";
+
+                input.addEventListener('input', function() {
+                    let value = this.value;
+                    value = value.replace(/,/g, '.');
+                    value = value.replace(/[^0-9.]/g, '');
+                    
+                    const parts = value.split('.');
+                    if (parts.length > 2) {
+                        value = parts[0] + '.' + parts.slice(1).join('');
+                    }
+                    
+                    if (parts.length === 2 && parts[1].length > 2) {
+                        value = parts[0] + '.' + parts[1].substring(0, 2);
+                    }
+                    
+                    this.value = value;
+                });
+
+                input.addEventListener('blur', function() {
+                    let value = this.value.trim();
+                    if (value === '') return;
+                    
+                    let num = parseFloat(value);
+                    if (isNaN(num)) {
+                        this.value = '';
+                    } else {
+                        this.value = num.toFixed(2);
+                    }
+                    this.dispatchEvent(new Event('change'));
+                });
+            }
+
+            // ─── 2. Máscara para DUI (########-#) ──────────────────────────────
+            function aplicarMascaraDui(input) {
+                if (input.dataset.duiMaskApplied) return;
+                input.dataset.duiMaskApplied = "true";
+
+                input.setAttribute('maxlength', '10');
+                if (!input.getAttribute('placeholder')) {
+                    input.setAttribute('placeholder', '00000000-0');
+                }
+
+                input.addEventListener('input', function() {
+                    let value = this.value;
+                    let digits = value.replace(/\D/g, '');
+                    
+                    if (digits.length > 9) {
+                        digits = digits.substring(0, 9);
+                    }
+                    
+                    if (digits.length > 8) {
+                        this.value = digits.substring(0, 8) + '-' + digits.substring(8);
+                    } else {
+                        this.value = digits;
+                    }
+                });
+
+                input.addEventListener('keypress', function(e) {
+                    if (e.key < '0' || e.key > '9') {
+                        if (e.key.length === 1) {
+                            e.preventDefault();
+                        }
+                    }
+                });
+            }
+
+            // ─── 3. Inicializar Lucide Icons (declarados en el markup) ──────────
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+            // Aplicar máscaras iniciales
+            document.querySelectorAll('.mascara-monto').forEach(aplicarMascaraMonto);
+            document.querySelectorAll('.mascara-dui').forEach(aplicarMascaraDui);
+
+            // Observador de mutaciones para inyecciones AJAX dinámicas (solo máscaras + iconos)
+            const observer = new MutationObserver(function(mutations) {
+                let needsIcons = false;
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            // Montos
+                            if (node.classList && node.classList.contains('mascara-monto')) {
+                                aplicarMascaraMonto(node);
+                            }
+                            node.querySelectorAll('.mascara-monto').forEach(aplicarMascaraMonto);
+
+                            // DUI
+                            if (node.classList && node.classList.contains('mascara-dui')) {
+                                aplicarMascaraDui(node);
+                            }
+                            node.querySelectorAll('.mascara-dui').forEach(aplicarMascaraDui);
+
+                            // Si hay nuevos elementos con data-lucide, procesar iconos
+                            if (node.querySelector && node.querySelector('[data-lucide]:not(svg)')) {
+                                needsIcons = true;
+                            }
+                            if (node.hasAttribute && node.hasAttribute('data-lucide') && node.tagName !== 'svg') {
+                                needsIcons = true;
+                            }
+                        }
+                    });
+                });
+
+                if (needsIcons && typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+        //]]>
+    </script>
+</h:body>
+</html>
