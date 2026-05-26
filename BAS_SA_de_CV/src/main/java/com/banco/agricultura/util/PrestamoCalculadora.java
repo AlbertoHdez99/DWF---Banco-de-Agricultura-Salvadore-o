@@ -8,14 +8,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
- * Utilidad para todos los cálculos relacionados con préstamos.
- * Centraliza las reglas de negocio según el caso de estudio.
- *
- * Tabla de límites según salario:
- *   < $365          → máx $10,000  al 3%
- *   $365 – $599.99  → máx $25,000  al 3%
- *   $600 – $899.99  → máx $35,000  al 4%
- *   ≥ $1,000        → máx $50,000  al 5%
+ * Utilidad para realizar cálculos de préstamos.
  */
 public class PrestamoCalculadora {
 
@@ -33,13 +26,10 @@ public class PrestamoCalculadora {
     private static final BigDecimal TASA_4_PORCIENTO  = new BigDecimal("0.04");
     private static final BigDecimal TASA_5_PORCIENTO  = new BigDecimal("0.05");
 
-    // Cuota máxima = 30% del salario
     private static final BigDecimal PORCENTAJE_CUOTA_MAX = new BigDecimal("0.30");
 
-    // ─────────────────────────────────────────────────────────────────────────
-
     /**
-     * Determina la tasa de interés anual según el salario del cliente.
+     * Obtiene la tasa de interés anual según el salario.
      */
     public static BigDecimal obtenerTasaInteres(BigDecimal salario) {
         if (salario.compareTo(SALARIO_RANGO_1) < 0) {
@@ -54,7 +44,7 @@ public class PrestamoCalculadora {
     }
 
     /**
-     * Determina el monto máximo que puede solicitar el cliente según su salario.
+     * Obtiene el monto máximo de préstamo según el salario.
      */
     public static BigDecimal obtenerMontoMaximo(BigDecimal salario) {
         if (salario.compareTo(SALARIO_RANGO_1) < 0) {
@@ -69,28 +59,18 @@ public class PrestamoCalculadora {
     }
 
     /**
-     * Calcula la cuota mensual usando la fórmula de amortización francesa:
-     *   cuota = (monto × r) / (1 − (1 + r)^−n)
-     * donde r = tasa_anual / 12  y  n = meses totales.
-     *
-     * @param monto       Monto del préstamo
-     * @param tasaAnual   Tasa de interés anual (ej: 0.03 para 3%)
-     * @param meses       Plazo en meses
-     * @return Cuota mensual redondeada a 2 decimales
+     * Calcula la cuota mensual mediante amortización francesa.
      */
     public static BigDecimal calcularCuotaMensual(BigDecimal monto,
                                                   BigDecimal tasaAnual,
                                                   int meses) {
         MathContext mc = new MathContext(15, RoundingMode.HALF_UP);
 
-        // r = tasa mensual
         BigDecimal r = tasaAnual.divide(BigDecimal.valueOf(12), mc);
 
-        // (1 + r)^n usando double para el exponente — precisión suficiente para montos bancarios
         double base    = 1.0 + r.doubleValue();
         double factor  = Math.pow(base, meses);
 
-        // cuota = (monto × r) / (1 − (1+r)^−n) = (monto × r × factor) / (factor − 1)
         BigDecimal factorBD = BigDecimal.valueOf(factor);
         BigDecimal numerador   = monto.multiply(r, mc).multiply(factorBD, mc);
         BigDecimal denominador = factorBD.subtract(BigDecimal.ONE);
@@ -99,15 +79,7 @@ public class PrestamoCalculadora {
     }
 
     /**
-     * Calcula los años de plazo mínimos necesarios para que la cuota mensual
-     * no supere el 30% del salario del cliente.
-     * Busca desde 1 año hasta 30 años. Si no encuentra un plazo viable, lanza excepción.
-     *
-     * @param monto     Monto del préstamo
-     * @param tasaAnual Tasa anual
-     * @param salario   Salario mensual del cliente
-     * @return Años de plazo mínimos donde la cuota ≤ 30% del salario
-     * @throws CuotaExcedeSalarioException si ningún plazo de hasta 30 años lo permite
+     * Calcula los años mínimos de plazo para no superar la cuota máxima.
      */
     public static int calcularAniosPlazo(BigDecimal monto,
                                          BigDecimal tasaAnual,
@@ -132,8 +104,7 @@ public class PrestamoCalculadora {
     }
 
     /**
-     * Valida que el monto solicitado no exceda el límite permitido por salario.
-     * @throws MontoPrestamoExcedidoException si el monto supera el máximo
+     * Valida que el monto solicitado no supere el límite permitido por el salario.
      */
     public static void validarMonto(BigDecimal montoSolicitado, BigDecimal salario) {
         BigDecimal maximo = obtenerMontoMaximo(salario);
@@ -147,7 +118,7 @@ public class PrestamoCalculadora {
     }
 
     /**
-     * Cuota máxima permitida = 30% del salario.
+     * Calcula la cuota máxima permitida (30% del salario).
      */
     public static BigDecimal calcularCuotaMaximaPermitida(BigDecimal salario) {
         return salario.multiply(PORCENTAJE_CUOTA_MAX).setScale(2, RoundingMode.HALF_UP);
